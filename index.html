@@ -196,6 +196,17 @@
 </div>
 </div>
 </div>
+<div ="upgradePage"
+<div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6">
+<h2 class="text-2xl font-bold text-white mb-4">🎭 Personnages</h2>
+<p class="text-white/70 text-sm mb-4">Sélectionnés: <span id="selectedCount">0</span></p>
+<div id="selectedCharacters" class="flex flex-wrap gap-2 mb-4"></div>
+<div id="characterList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+<button id="createCharacterBtn" onclick="createCustomCharacter()" class="w-full mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 rounded-lg font-bold hover:shadow-lg transition hidden">+ Créer un Personnage</button>
+</div>
+</div>
+</div>
+</div>
 <div id="upgradePage" class="hidden">
 <div class="min-h-screen p-4">
 <div class="max-w-4xl mx-auto">
@@ -247,13 +258,4 @@ function closeAuthModal(){document.getElementById('authModal').classList.add('hi
 function toggleAuthMode(){authMode='login'===authMode?'register':'login',showAuthModal(authMode)}
 function handleAuth(){const e=document.getElementById('authEmail').value,t=document.getElementById('authPassword').value;if(!e||!t)return void alert('Veuillez remplir tous les champs');let n='standard';e===ADMIN_EMAIL&&(n='extra'),currentUser={email:e,plan:n,createdAt:new Date().toISOString()},localStorage.setItem('mangakaUser',JSON.stringify(currentUser)),closeAuthModal(),showMainApp()}
 function logout(){confirm('Êtes-vous sûr de vouloir vous déconnecter ?')&&(currentUser=null,selectedCharacters=[],localStorage.removeItem('mangakaUser'),showLandingPage())}
-function updateUserInterface(){const e={standard:{name:'Standard',maxDuration:5,quality:'HD 1080p'},pro:{name:'Pro',maxDuration:30,quality:'8K Ultra HD'},extra:{name:'Extra',maxDuration:999,quality:'8K Ultra HD Premium'}},t=e[currentUser.plan]||e.standard;document.getElementById('planBadge').innerHTML=`<svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg><span class="text-white font-bold">${t.name}</span>`;const n=999===t.maxDuration?'Illimitée':`${t.maxDuration} minutes`;document.getElementById('durationInfo').textContent=`Durée max: ${n} • Qualité: ${t.quality}`,'extra'===currentUser.plan&&document.getElementById('createCharacterBtn').classList.remove('hidden')}
-function renderCharacterList(){const e=document.getElementById('characterList');e.innerHTML='',animeCharacters.forEach(t=>{const n=selectedCharacters.find(e=>e.id===t.id),a=document.createElement('div');a.className=`p-4 rounded-lg transition cursor-pointer flex items-center gap-3 ${n?'bg-purple-500/50 border-2 border-purple-400':'bg-white/5 hover:bg-white/10'}`,a.onclick=()=>toggleCharacter(t),a.innerHTML=`<span class="text-3xl">${t.avatar}</span><div><p class="text-white font-bold">${t.name}</p><p class="text-white/50 text-sm">${t.series}</p></div>`,e.appendChild(a)}),updateSelectedCharacters()}
-function toggleCharacter(e){const t=selectedCharacters.findIndex(t=>t.id===e.id);t>-1?selectedCharacters.splice(t,1):selectedCharacters.push(e),renderCharacterList()}
-function updateSelectedCharacters(){document.getElementById('selectedCount').textContent=selectedCharacters.length;const e=document.getElementById('selectedCharacters');0===selectedCharacters.length?e.innerHTML='':e.innerHTML=selectedCharacters.map(e=>`<div class="bg-purple-500/30 px-3 py-1 rounded-full text-white text-sm flex items-center gap-2"><span>${e.avatar}</span><span>${e.name}</span><button onclick="removeCharacter(${e.id})" class="text-white/70 hover:text-white">×</button></div>`).join('')}
-function removeCharacter(e){selectedCharacters=selectedCharacters.filter(t=>t.id!==e),renderCharacterList()}
-function generateVideo(){const e=document.getElementById('scriptInput').value;if(!e.trim())return void alert('Veuillez écrire un scénario');if(0===selectedCharacters.length)return void alert('Veuillez sélectionner au moins un personnage');const t=document.getElementById('generateBtn');t.disabled=!0,t.innerHTML='<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>Génération en cours...',setTimeout(()=>{t.disabled=!1,t.innerHTML='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>Générer la Vidéo',alert("✅ Vidéo générée avec succès!\n\nNote: Ceci est une démo. Dans la version complète, votre vidéo serait générée ici avec l'IA.")},3e3)}
-function showUpgradePage(){document.getElementById('mainApp').classList.add('hidden'),document.getElementById('upgradePage').classList.remove('hidden')}
-function hideUpgradePage(){document.getElementById('upgradePage').classList.add('hidden'),document.getElementById('mainApp').classList.remove('hidden')}
-function upgradeToPlan(e){const t={pro:'2500 FCFA/mois',extra:'30000 FCFA/an'};alert(`💳 Pour passer au plan ${e.toUpperCase()}\n\nPrix: ${t[e]}\n\nÉtapes:\n1. Envoyez ${t[e]} au numéro: ${PAYMENT_NUMBER}\n2. Prenez une capture d'écran de la preuve de paiement\n3. Contactez-nous sur WhatsApp au ${PAYMENT_NUMBER}\n4. Envoyez votre email (${currentUser.email}) et la preuve\n5. Votre compte sera activé sous 24h\n\nMerci de votre confiance ! 🎉`)}
-function createCustomCharacter(){alert("🎨 Création de personnages personnalisés\n\nCette fonctionnalité sera disponible prochainement!\n\nVous pourrez créer vos propres personnages avec:\n- Apparence personnalisée\n- Voix unique\n
+function updateUserInterface(){const e={standard:{e={standard:{name:'Standard',maxDuration:5,quality
